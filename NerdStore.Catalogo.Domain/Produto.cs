@@ -28,6 +28,7 @@ namespace NerdStore.Catalogo.Domain
 			DataCadastro = dataCadastro;
 			Imagem = imagem;
 
+			Validar();
 		}
 		
 
@@ -52,6 +53,7 @@ namespace NerdStore.Catalogo.Domain
 		public void DebitarEstoque(int quantidade)
 		{
 			if (quantidade < 0) quantidade *= -1;
+			if (!PossuiEstoque(quantidade)) throw new DomainException("Estoque insuficiente");
 			QuantidadeEstoque -= quantidade;
 		}
 
@@ -66,26 +68,13 @@ namespace NerdStore.Catalogo.Domain
 		}
 		#endregion
 
-		public void Validar() { 
-		
-		}
-	}
-
-	public class Categoria : Entity
-	{
-		public string Nome { get; set; }
-
-		public int Codigo { get; set; }
-
-		public Categoria(string nome, int codigo)
+		public void Validar() 
 		{
-			Nome = Nome;
-			Codigo = Codigo;
-		}
-
-		public override string ToString()
-		{
-			return $"{Nome} - {Codigo}";
+			Validacoes.ValidarSeVazio(Nome, "O Campo Nome do produto não pode estar vazio");
+			Validacoes.ValidarSeVazio(Descricao, "O campo Descricao do produto não pode estar vazio");
+			Validacoes.ValidarSeDiferente(CategoriaId, Guid.Empty, "O campo CategoriaId do produto não pode estar vazio");
+			Validacoes.ValidarSeMenorIgualMinimo(Valor, 0, "O campo Valor do produto não poder ser menor igual a 0");
+			Validacoes.ValidarSeVazio(Imagem, "O campo Imagem do produto não pode estar vazio"); 
 		}
 	}
 }
